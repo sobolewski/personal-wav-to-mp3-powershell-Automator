@@ -1,14 +1,17 @@
 ﻿   $outputExtension = ".mp3"
    $bitrate = 320
    $channels = 2
-   
-   foreach($inputFile in get-childitem -recurse -Filter *.wav)
+   # Enter the path to the file you need to update.  Include a trailing slash.
+   $path = "E:\ableton-wav-to-mp3\"
+   $WavFiles = get-childitem -Path $path -recurse -Filter *.wav
+   foreach($inputFile in $WavFiles)
    { 
      $outputFileName = [System.IO.Path]::GetFileNameWithoutExtension($inputFile.FullName) + $outputExtension;
      $outputFileName = [System.IO.Path]::Combine($inputFile.DirectoryName, $outputFileName);
      
-     $programFiles = ${env:ProgramFiles(x86)};
-     if($programFiles -eq $null) { $programFiles = $env:ProgramFiles; }
+     #$programFiles = ${env:ProgramFiles(x86)};
+     #if($programFiles -eq $null) { $programFiles = $env:ProgramFiles; }
+     $programFiles = "C:\Program Files\"
      
      $processName = $programFiles + "\VideoLAN\VLC\vlc.exe"
      $processArgs = "-I dummy -vvv `"$($inputFile.FullName)`" --sout=#transcode{acodec=`"mp3`",ab=`"$bitrate`",`"channels=$channels`"}:standard{access=`"file`",mux=`"wav`",dst=`"$outputFileName`"} vlc://quit"
@@ -17,30 +20,17 @@
    }
 
 
-
-
-
-#########################################
-# MP3 Tag Update Script
-#
-# Requires Taglib library
-#
-# www.rickgouin.com
-# 9/9/2015
-#########################################
  
-# Enter the path to the file you need to update.  Include a trailing slash.
-$path = "E:\ableton-wav-to-mp3\"
+
  
 # Load the assembly that will handle the MP3 tagging.
-#[Reflection.Assembly]::LoadFrom("C:\Users\Held\Documents\Projects\wav-to-mp3-and-tag\taglib-sharp.dll")
 [Reflection.Assembly]::Loadfile("C:\Users\Held\Documents\Projects\wav-to-mp3-and-tag\taglib-sharp.dll")
  
 # Get a list of files in your path.  Skip directories.
-$files = Get-ChildItem -Path $path | Where-Object { (-not $_.PSIsContainer) }
+$Mp3files = Get-ChildItem -Path $path -Filter *.mp3 | Where-Object { (-not $_.PSIsContainer) }
  
 # Loop through the files
-foreach ($filename in $files){
+foreach ($filename in $Mp3files){
 # Load up the MP3 file.
 $media = [TagLib.File]::Create(($path+$filename))
 
