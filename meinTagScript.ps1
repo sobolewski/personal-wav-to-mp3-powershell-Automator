@@ -17,6 +17,7 @@
      $processArgs = "-I dummy -vvv `"$($inputFile.FullName)`" --sout=#transcode{acodec=`"mp3`",ab=`"$bitrate`",`"channels=$channels`"}:standard{access=`"file`",mux=`"wav`",dst=`"$outputFileName`"} vlc://quit"
      
      start-process $processName $processArgs -wait
+     Remove-Item $inputFile
    }
 
 
