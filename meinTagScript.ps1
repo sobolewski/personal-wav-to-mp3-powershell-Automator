@@ -11,7 +11,7 @@
 $path = "E:\ableton-wav-to-mp3\"
  
 # Load the assembly that will handle the MP3 tagging.
-[Reflection.Assembly]::LoadFrom("E:\ableton-wav-to-mp3\taglib-sharp-2.1.0.0-windows\Libraries\taglib-sharp.dll")
+[Reflection.Assembly]::LoadFrom("taglib-sharp.dll")
  
 # Get a list of files in your path.  Skip directories.
 $files = Get-ChildItem -Path $path | Where-Object { (-not $_.PSIsContainer) }
@@ -43,9 +43,11 @@ else
 $name = $albumartists+”-“+$title.Trim()+$extension
 $media.Tag.Artists = $albumartists
 }
+
 #mein Code
 $album = "m"
 $media.Tag.Album = $album
+$media.Tag.Title = "meinTestTitel"
 
 # Save the tag changes back
 $media.Save()
