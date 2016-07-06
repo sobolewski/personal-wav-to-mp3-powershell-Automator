@@ -11,7 +11,8 @@
 $path = "E:\ableton-wav-to-mp3\"
  
 # Load the assembly that will handle the MP3 tagging.
-[Reflection.Assembly]::LoadFrom("taglib-sharp.dll")
+#[Reflection.Assembly]::LoadFrom("C:\Users\Held\Documents\Projects\wav-to-mp3-and-tag\taglib-sharp.dll")
+[Reflection.Assembly]::Loadfile("C:\Users\Held\Documents\Projects\wav-to-mp3-and-tag\taglib-sharp.dll")
  
 # Get a list of files in your path.  Skip directories.
 $files = Get-ChildItem -Path $path | Where-Object { (-not $_.PSIsContainer) }
@@ -20,56 +21,52 @@ $files = Get-ChildItem -Path $path | Where-Object { (-not $_.PSIsContainer) }
 foreach ($filename in $files){
 # Load up the MP3 file.
 $media = [TagLib.File]::Create(($path+$filename))
+
 # Load up the tags we know
-$albumartists = [string]$media.Tag.AlbumArtists
-$title = $media.Tag.Title
-$artists = [string]$media.Tag.Artists
-$extension = $filename.Extension
+#$albumartists = [string]$media.Tag.AlbumArtists
+#$title = $media.Tag.Title
+#$artists = [string]$media.Tag.Artists
+#$extension = $filename.Extension
+
 # A few files had no title.  Lets just save them with an artist name
-if([string]::IsNullOrEmpty($title))
-{
-$title = “missing title”
-$media.Tag.Title = $title
-}
+#if([string]::IsNullOrEmpty($title)){
+#$title = “missing title”
+#$media.Tag.Title = $title}
 # If the artists tag has info in it, use that, then reset albumartists tag to match
-if ($artists)
-{
-$name = $artists+”-“+$title.Trim()+$extension
-$media.Tag.AlbumArtists = $artists
-}
+#if ($artists){
+#$name = $artists+”-“+$title.Trim()+$extension
+#$media.Tag.AlbumArtists = $artists}
 # If the artists tag is empty, use the albumartists field, and set artists to match
-else
-{
-$name = $albumartists+”-“+$title.Trim()+$extension
-$media.Tag.Artists = $albumartists
-}
+#else
+#{$name = $albumartists+”-“+$title.Trim()+$extension
+#$media.Tag.Artists = $albumartists}
 
 #mein Code
-$album = "m"
-$media.Tag.Album = $album
-$media.Tag.Title = "meinTestTitel"
+$media.Tag.Title = $filename
+$media.Tag.Artists = "mohre"
+$media.Tag.Album = "m"
+
 
 # Save the tag changes back
 $media.Save()
+
 #remove any carriage returns in what will be the new filename
-$name = [string]$name -replace “`t|`n|`r”,””
+#$name = [string]$name -replace “`t|`n|`r”,””
 #remove illegal characters, replace with a hyphen
-[System.IO.Path]::GetInvalidFileNameChars() | % {$name = $name.replace($_,’ ‘)}
+#[System.IO.Path]::GetInvalidFileNameChars() | % {$name = $name.replace($_,’ ‘)}
 # There could be duplicate MP3 files with this name, so check if the new filename already exists
-If (Test-Path $path$name)
-{
-[int]$i = 1
+#If (Test-Path $path$name){
+#[int]$i = 1
 #if the file already exists, re-name it with an incrementing value after it, for example: Artist-Song Title-2.mp3
-While (Test-Path $path$newname)
-{
-$newname = $name
-$justname = [System.IO.Path]::GetFileNameWithoutExtension($path+$newname)
-$newname = $justname+”-“+$i+$extension
-$i++
-}
-$name = $newname
-}
+    #While (Test-Path $path$newname){
+        #$newname = $name
+        #$justname = [System.IO.Path]::GetFileNameWithoutExtension($path+$newname)
+        #$newname = $justname+”-“+$i+$extension
+        #$i++
+        #}
+#$name = $newname
+#}
 #rename the file per those tags
-Rename-Item  $path$filename $path$name
+#Rename-Item  $path$filename $path$name
  
 }
